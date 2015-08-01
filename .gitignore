@@ -1,0 +1,5 @@
+app/**/*.js
+app/**/*.html
+app/**/*.css
+app/**/*.css.map
+npm-debug.log
