@@ -38,6 +38,9 @@
   },
   "dependencies": {
     "body-parser": "^1.13.3",
-    "express": "^4.13.2"
+    "dropbox": "^0.10.3",
+    "express": "^4.13.2",
+    "jsonfile": "^2.2.1",
+    "underscore": "^1.8.3"
   }
 }
