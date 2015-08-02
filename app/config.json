@@ -1,4 +1,7 @@
 {
-  "key": "xxxxxxxxxxxxxxx",
-  "secret": "xxxxxxxxxxxxxxx"
+  "auth": {
+    "key": "xxxxxxxxxxxxxxx",
+    "secret": "xxxxxxxxxxxxxxx",
+    "token": "xxxxxxxxxxxxxxx"
+  }
 }

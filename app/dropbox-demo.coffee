@@ -45,21 +45,14 @@ showDropboxError = (error) ->
 # Expose
 module.exports = (app, config) ->
 
-  client = new Dropbox.Client {
-    key: config.key
-    secret: config.secret
-  }
+  client = new Dropbox.Client config.auth
 
   client.onError.addListener (error) ->
     showDropboxError error
 
-  client.authDriver new Dropbox.AuthDriver.NodeServer 8191
-
-  client.authenticate (error) ->
+  client.getAccountInfo (error, accountInfo) ->
     return showDropboxError error if error
-
-    client.getAccountInfo (error, accountInfo) ->
-      console.log accountInfo.name
+    console.log accountInfo.name
 
 
 
