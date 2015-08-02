@@ -55,10 +55,13 @@ module.exports = (app, config) ->
 
   client.authDriver new Dropbox.AuthDriver.NodeServer 8191
 
-  client.authenticate (error, dropboxClient) ->
+  client.authenticate (error) ->
     return showDropboxError error if error
 
-    console.log dropboxClient
+    client.getAccountInfo (error, accountInfo) ->
+      console.log accountInfo.name
+
+
 
 
   app.get "/", (req, res, next) ->
