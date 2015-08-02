@@ -13,7 +13,7 @@ module.exports = (grunt) ->
       "coffeelint:dev"
       "coffee:demo"
       "sass:demo"
-      "jade:demo"
+#      "jade:demo"
       "exec:dev"
     ]
   }

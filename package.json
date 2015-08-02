@@ -40,6 +40,7 @@
     "body-parser": "^1.13.3",
     "dropbox": "^0.10.3",
     "express": "^4.13.2",
+    "jade": "^1.11.0",
     "jsonfile": "^2.2.1",
     "underscore": "^1.8.3"
   }

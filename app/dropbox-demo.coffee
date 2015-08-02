@@ -52,10 +52,12 @@ module.exports = (app, config) ->
 
   client.getAccountInfo (error, accountInfo) ->
     return showDropboxError error if error
-    console.log accountInfo.name
+#    console.log "Name:", accountInfo.name
 
+  client.readdir "/Apps/DemoDropboxNodeJS/", (error, entries) ->
+    return showDropboxError error if error
+#    console.log "Entries:", entries
 
-
-
-  app.get "/", (req, res, next) ->
-    next()
+  client.readFile "/Apps/DemoDropboxNodeJS/markdown.txt", (error, data) ->
+    return showDropboxError error if error
+    console.log "Data:", data
