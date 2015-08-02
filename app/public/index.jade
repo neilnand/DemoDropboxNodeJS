@@ -1,0 +1,18 @@
+include ./includes/head
+
+header
+  h2= "Details"
+
+section
+  span(class="label")= "Name:"
+  span(class="value")= accountInfo.name
+
+section
+  h3(class="label")= "Contents:"
+  ul
+    each filename in demoDirList
+      li= filename
+
+
+
+include ./includes/foot

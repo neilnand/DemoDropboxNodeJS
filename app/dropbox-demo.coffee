@@ -5,8 +5,8 @@ jade = require "jade"
 Dropbox = require "dropbox"
 
 # Dropbox Error Handling
-showDropboxError = (error) ->
-  prefix = "Dropbox Client Error: "
+showDropboxError = (marker, error) ->
+  prefix = "###{marker} Dropbox Client Error: "
   switch error.status
     when Dropbox.ApiError.INVALID_TOKEN
       console.log "#{prefix}Dropbox.ApiError.INVALID_TOKEN"
@@ -56,13 +56,13 @@ module.exports = (app, config) ->
     showDropboxError error
 
   client.getAccountInfo (error, accountInfo) ->
-    return showDropboxError error if error
+    return showDropboxError 1, error if error
 
     client.readdir "/Apps/DemoDropboxNodeJS/", (error, demoDirList) ->
-      return showDropboxError error if error
+      return showDropboxError 2, error if error
 
-      client.readFile "/Apps/DemoDropboxNodeJS/markdown.txt", (error, data) ->
-        return showDropboxError error if error
+      client.readFile "/Apps/DemoDropboxNodeJS/markdown.md", (error, data) ->
+        return showDropboxError 3, error if error
 
         templates = []
 
