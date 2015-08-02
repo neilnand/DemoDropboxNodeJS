@@ -4,7 +4,8 @@
   "description": "Demo of NodeJS reading files in DropBox",
   "main": "./app/server.coffee",
   "ports": {
-    "main": 3000
+    "main": 3000,
+    "livereload": 3001
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -33,6 +34,7 @@
     "grunt-contrib-coffee": "^0.13.0",
     "grunt-contrib-jade": "^0.15.0",
     "grunt-contrib-sass": "^0.9.2",
+    "grunt-contrib-watch": "^0.6.1",
     "grunt-exec": "^0.4.6",
     "matchdep": "^0.3.0"
   },

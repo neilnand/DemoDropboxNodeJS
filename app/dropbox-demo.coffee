@@ -1,5 +1,10 @@
+# File System
+fs = require "fs"
+jade = require "jade"
+
 Dropbox = require "dropbox"
 
+# Dropbox Error Handling
 showDropboxError = (error) ->
   prefix = "Dropbox Client Error: "
   switch error.status
@@ -60,4 +65,15 @@ module.exports = (app, config) ->
 
   client.readFile "/Apps/DemoDropboxNodeJS/markdown.txt", (error, data) ->
     return showDropboxError error if error
-    console.log "Data:", data
+
+
+    options = {}
+
+
+    fs.readdirSync(__dirname + "/public/").forEach (filename) ->
+      return if (filename.length - filename.lastIndexOf(".jade")) isnt 5
+
+      html = jade.renderFile "./public/#{filename}", options
+
+      fs.writeFileSync __dirname + "/public/" + filename.replace(".jade", ".html"), html
+

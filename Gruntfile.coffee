@@ -16,6 +16,9 @@ module.exports = (grunt) ->
 #      "jade:demo"
       "exec:dev"
     ]
+    devwatch: [
+      "watch:demo"
+    ]
   }
 
 
@@ -55,6 +58,18 @@ module.exports = (grunt) ->
         }]
         options:
           style: "expanded"
+
+    # Watch for changes in development
+    watch:
+      options:
+        livereload: npmPackage.ports.livereload
+      demo:
+        files: [
+          "demos/**/*.sass"
+        ]
+        tasks: [
+          "sass:demo"
+        ]
 
     # Convert CoffeeScript into JavaScript
     coffee:
