@@ -3,6 +3,7 @@ fs = require "fs"
 jade = require "jade"
 
 Dropbox = require "dropbox"
+marked = require "marked"
 
 # Dropbox Error Handling
 showDropboxError = (marker, error) ->
@@ -52,36 +53,44 @@ module.exports = (app, config) ->
 
   client = new Dropbox.Client config.auth
 
+  # General Error
   client.onError.addListener (error) ->
     showDropboxError error
 
+  # Get Account Details
   client.getAccountInfo (error, accountInfo) ->
     return showDropboxError 1, error if error
 
+    # Get Directory Contents
     client.readdir "/Apps/DemoDropboxNodeJS/", (error, demoDirList) ->
       return showDropboxError 2, error if error
 
-      client.readFile "/Apps/DemoDropboxNodeJS/markdown.md", (error, data) ->
+      # Read Markdown File
+      client.readFile "/Apps/DemoDropboxNodeJS/markdown.md", (error, markdownFileData) ->
         return showDropboxError 3, error if error
 
-        templates = []
+        markdownFileData = marked markdownFileData, (err, markdownFileData) ->
 
-        fs.readdirSync(__dirname + "/public/").forEach (filename) ->
-          return if (filename.length - filename.lastIndexOf(".jade")) isnt 5
-          templates.push
-            filename: filename
-            path: "./public/#{filename}"
-            htmlFilename: filename.replace ".jade", ".html"
+          # General HTML
+          templates = []
 
-        options =
-          accountInfo: accountInfo
-          demoDirList: demoDirList
-          templates: templates
+          fs.readdirSync(__dirname + "/public/").forEach (filename) ->
+            return if (filename.length - filename.lastIndexOf(".jade")) isnt 5
+            templates.push
+              filename: filename
+              path: "./public/#{filename}"
+              htmlFilename: filename.replace ".jade", ".html"
 
-        templates.forEach (template) ->
+          options =
+            accountInfo: accountInfo
+            demoDirList: demoDirList
+            templates: templates
+            markdownFileData: markdownFileData
 
-          html = jade.renderFile template.path, options
-          fs.writeFileSync __dirname + "/public/" + template.htmlFilename, html
+          templates.forEach (template) ->
 
-          console.log "## Site Generated"
+            html = jade.renderFile template.path, options
+            fs.writeFileSync __dirname + "/public/" + template.htmlFilename, html
+
+            console.log "## #{template.htmlFilename} generated"
 

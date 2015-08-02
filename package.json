@@ -44,6 +44,7 @@
     "express": "^4.13.2",
     "jade": "^1.11.0",
     "jsonfile": "^2.2.1",
+    "marked": "^0.3.5",
     "underscore": "^1.8.3"
   }
 }
