@@ -7,5 +7,11 @@ html(lang="en")
     meta(http-equiv="content-language", content="en")
     meta(charset="UTF-8")
   body
-    p="Hello World"
-    script(src="script.js")
+    header
+      h1= "Dropbox Integration"
+
+    nav
+      ul
+        each template in templates
+          li
+            a(href=template.htmlFilename)= "/" + template.htmlFilename

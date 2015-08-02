@@ -57,23 +57,31 @@ module.exports = (app, config) ->
 
   client.getAccountInfo (error, accountInfo) ->
     return showDropboxError error if error
-#    console.log "Name:", accountInfo.name
 
-  client.readdir "/Apps/DemoDropboxNodeJS/", (error, entries) ->
-    return showDropboxError error if error
-#    console.log "Entries:", entries
+    client.readdir "/Apps/DemoDropboxNodeJS/", (error, demoDirList) ->
+      return showDropboxError error if error
 
-  client.readFile "/Apps/DemoDropboxNodeJS/markdown.txt", (error, data) ->
-    return showDropboxError error if error
+      client.readFile "/Apps/DemoDropboxNodeJS/markdown.txt", (error, data) ->
+        return showDropboxError error if error
 
+        templates = []
 
-    options = {}
+        fs.readdirSync(__dirname + "/public/").forEach (filename) ->
+          return if (filename.length - filename.lastIndexOf(".jade")) isnt 5
+          templates.push
+            filename: filename
+            path: "./public/#{filename}"
+            htmlFilename: filename.replace ".jade", ".html"
 
+        options =
+          accountInfo: accountInfo
+          demoDirList: demoDirList
+          templates: templates
 
-    fs.readdirSync(__dirname + "/public/").forEach (filename) ->
-      return if (filename.length - filename.lastIndexOf(".jade")) isnt 5
+        templates.forEach (template) ->
 
-      html = jade.renderFile "./public/#{filename}", options
+          html = jade.renderFile template.path, options
+          fs.writeFileSync __dirname + "/public/" + template.htmlFilename, html
 
-      fs.writeFileSync __dirname + "/public/" + filename.replace(".jade", ".html"), html
+          console.log "## Site Generated"
 

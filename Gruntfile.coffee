@@ -65,7 +65,7 @@ module.exports = (grunt) ->
         livereload: npmPackage.ports.livereload
       demo:
         files: [
-          "demos/**/*.sass"
+          "#{PUBLIC}/**/*.sass"
         ]
         tasks: [
           "sass:demo"
