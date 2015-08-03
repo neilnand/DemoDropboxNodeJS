@@ -69,7 +69,18 @@ module.exports = (app, config) ->
       client.readFile "/Apps/DemoDropboxNodeJS/markdown.md", (error, markdownFileData) ->
         return showDropboxError 3, error if error
 
+        # Parse Markdown Data
         markdownFileData = marked markdownFileData, (err, markdownFileData) ->
+
+          # Read "Day One" files
+          client.readdir "/Apps/DemoDropboxNodeJS/dayonefiles/", (error, dayoneDirList) ->
+            return showDropboxError 2, error if error
+
+            console.log 111, dayoneDirList
+
+
+
+
 
           # General HTML
           templates = []
