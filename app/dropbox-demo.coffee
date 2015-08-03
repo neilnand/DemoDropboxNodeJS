@@ -5,6 +5,10 @@ jade = require "jade"
 Dropbox = require "dropbox"
 marked = require "marked"
 
+# Utils
+parseValueName = (input) ->
+  input.replace(/[^a-z0-9]/gi, '_')
+
 # Dropbox Error Handling
 showDropboxError = (marker, error) ->
   prefix = "###{marker} Dropbox Client Error: "
@@ -48,6 +52,46 @@ showDropboxError = (marker, error) ->
       # Tell the user an error occurred, ask them to refresh the page.
 
 
+# Write Files
+jadeOptions = {}
+
+writeFiles = ->
+  # General HTML
+  jadeOptions.templates = []
+
+  fs.readdirSync(__dirname + "/public/").forEach (filename) ->
+    return if (filename.length - filename.lastIndexOf(".jade")) isnt 5
+    jadeOptions.templates.push
+      filename: filename
+      path: "./public/#{filename}"
+      htmlFilename: filename.replace ".jade", ".html"
+
+  jadeOptions.templates.forEach (template) ->
+
+    html = jade.renderFile template.path, jadeOptions
+    fs.writeFileSync __dirname + "/public/" + template.htmlFilename, html
+
+    console.log "## #{template.htmlFilename} generated"
+
+tryWriteFilesCount = 0
+tryWriteFiles = ->
+  if tryWriteFilesCount is 0
+    writeFiles()
+
+
+class ReadDayOneFile
+  constructor: (dir, filename, client) ->
+    tryWriteFilesCount++
+    client.readFile dir + filename, (error, fileData) =>
+      return showDropboxError 3, error if error
+      console.log fileData
+
+      @$complete()
+  $complete: ->
+    tryWriteFilesCount--
+    tryWriteFiles()
+
+
 # Expose
 module.exports = (app, config) ->
 
@@ -55,15 +99,19 @@ module.exports = (app, config) ->
 
   # General Error
   client.onError.addListener (error) ->
-    showDropboxError error
+    showDropboxError 0, error
 
   # Get Account Details
   client.getAccountInfo (error, accountInfo) ->
     return showDropboxError 1, error if error
 
+    jadeOptions.accountInfo = accountInfo
+
     # Get Directory Contents
     client.readdir "/Apps/DemoDropboxNodeJS/", (error, demoDirList) ->
       return showDropboxError 2, error if error
+
+      jadeOptions.demoDirList = demoDirList
 
       # Read Markdown File
       client.readFile "/Apps/DemoDropboxNodeJS/markdown.md", (error, markdownFileData) ->
@@ -72,36 +120,15 @@ module.exports = (app, config) ->
         # Parse Markdown Data
         markdownFileData = marked markdownFileData, (err, markdownFileData) ->
 
+          jadeOptions.markdownFileData = markdownFileData
+
           # Read "Day One" files
-          client.readdir "/Apps/DemoDropboxNodeJS/dayonefiles/", (error, dayoneDirList) ->
+          dir = "/Apps/DemoDropboxNodeJS/dayonefiles/"
+          client.readdir dir, (error, dayoneDirList) ->
             return showDropboxError 2, error if error
 
-            console.log 111, dayoneDirList
+            jadeOptions.dayOneFiles = []
 
-
-
-
-
-          # General HTML
-          templates = []
-
-          fs.readdirSync(__dirname + "/public/").forEach (filename) ->
-            return if (filename.length - filename.lastIndexOf(".jade")) isnt 5
-            templates.push
-              filename: filename
-              path: "./public/#{filename}"
-              htmlFilename: filename.replace ".jade", ".html"
-
-          options =
-            accountInfo: accountInfo
-            demoDirList: demoDirList
-            templates: templates
-            markdownFileData: markdownFileData
-
-          templates.forEach (template) ->
-
-            html = jade.renderFile template.path, options
-            fs.writeFileSync __dirname + "/public/" + template.htmlFilename, html
-
-            console.log "## #{template.htmlFilename} generated"
+            for filename in dayoneDirList
+              jadeOptions.dayOneFiles.push new ReadDayOneFile dir, filename, client
 
