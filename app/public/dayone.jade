@@ -13,7 +13,9 @@ mixin display(obj)
     div
       span(class="label")= index + ": "
 
-      if typeof(val) == "object"
+      if val instanceof Array
+        span(class="value")= val.join(", ")
+      else if typeof(val) == "object"
         +display(val)
       else
         span(class="value")= val

@@ -88,6 +88,10 @@ dayOneParse = (dict, parent) ->
         if val.name is "dict"
           parent[keyName] = {}
           dayOneParse val, parent[keyName]
+        else if val.name is "array"
+          parent[keyName] = []
+          for item in val.children
+            parent[keyName].push item.val
         else
           parent[keyName] = val.val
       else
