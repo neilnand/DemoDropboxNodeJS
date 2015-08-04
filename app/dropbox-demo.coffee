@@ -79,6 +79,20 @@ tryWriteFiles = ->
   if tryWriteFilesCount is 0
     writeFiles()
 
+dayOneParse = (dict, parent) ->
+  if dict.children
+    for key, index in dict.children by 2
+      if key.name is "key"
+        val = dict.children[index+1]
+        keyName = parseValueName key.val
+        if val.name is "dict"
+          parent[keyName] = {}
+          dayOneParse val, parent[keyName]
+        else
+          parent[keyName] = val.val
+      else
+        console.log "ReadDayOneFile $parse Error"
+
 
 class ReadDayOneFile
   constructor: (dir, filename, client) ->
@@ -87,30 +101,15 @@ class ReadDayOneFile
       return showDropboxError 3, error if error
 
       # Remove XML Whitespace
-      fileData = fileData.replace(/\s+/g, ' ').replace(/>\s*/g, '>').replace(/\s*</g, '<')
+      fileData = fileData.replace(/>\s*/g, '>').replace(/\s*</g, '<')
 
       document = new xmldoc.XmlDocument fileData
-      @$parse document.firstChild, this
+      dayOneParse document.firstChild, this
 
-      @$complete()
-  $parse: (dict, parent) ->
-    if dict.children
-      for key, index in dict.children by 2
-        if key.name is "key"
-          val = dict.children[index+1]
-          keyName = parseValueName key.val
-          if val.name is "dict"
-            parent[keyName] = {}
-            @$parse val, parent[keyName]
-          else
-            parent[keyName] = val.val
-        else
-          console.log "ReadDayOneFile $parse Error"
-  $complete: ->
-    @renderedContent = marked @Entry_Text
-    tryWriteFilesCount--
-    tryWriteFiles()
+      @renderedContent = marked @Entry_Text
 
+      tryWriteFilesCount--
+      tryWriteFiles()
 
 # Expose
 module.exports = (app, config) ->

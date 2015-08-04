@@ -1,0 +1,29 @@
+include ./includes/head
+header
+  h2= "Day One"
+
+mixin val(name, value)
+  if value
+    li
+      span(class="label")= name
+      span(class="value")= value
+
+mixin display(obj)
+  each val, index in obj
+    div
+      span(class="label")= index + ": "
+
+      if typeof(val) == "object"
+        +display(val)
+      else
+        span(class="value")= val
+
+each blogpost in dayOneFiles
+  section(class="dayone")
+    +display(blogpost)
+
+    h3(class="main")= "Title"
+    div(class="main")
+      div(class="content")!= blogpost.renderedContent
+
+include ./includes/foot
