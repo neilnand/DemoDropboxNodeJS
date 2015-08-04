@@ -4,6 +4,7 @@ jade = require "jade"
 
 Dropbox = require "dropbox"
 marked = require "marked"
+xmldoc = require "xmldoc"
 
 # Utils
 parseValueName = (input) ->
@@ -84,10 +85,29 @@ class ReadDayOneFile
     tryWriteFilesCount++
     client.readFile dir + filename, (error, fileData) =>
       return showDropboxError 3, error if error
-      console.log fileData
+
+      # Remove XML Whitespace
+      fileData = fileData.replace(/\s+/g, ' ').replace(/>\s*/g, '>').replace(/\s*</g, '<')
+
+      document = new xmldoc.XmlDocument fileData
+      @$parse document.firstChild, this
 
       @$complete()
+  $parse: (dict, parent) ->
+    if dict.children
+      for key, index in dict.children by 2
+        if key.name is "key"
+          val = dict.children[index+1]
+          keyName = parseValueName key.val
+          if val.name is "dict"
+            parent[keyName] = {}
+            @$parse val, parent[keyName]
+          else
+            parent[keyName] = val.val
+        else
+          console.log "ReadDayOneFile $parse Error"
   $complete: ->
+    @renderedContent = marked @Entry_Text
     tryWriteFilesCount--
     tryWriteFiles()
 
