@@ -11,4 +11,4 @@
 - https://www.npmjs.com/package/marked
 
 ### XML
-- https://www.npmjs.com/package/xml2js
+- https://www.npmjs.com/package/xmldoc
