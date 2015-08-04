@@ -24,8 +24,8 @@ each blogpost in dayOneFiles
   section(class="dayone")
     +display(blogpost)
 
-    h3(class="main")= "Title"
+    h3(class="main")= "Title: " + blogpost.postTitle
     div(class="main")
-      div(class="content")!= blogpost.renderedContent
+      div(class="content")!= blogpost.postBody
 
 include ./includes/foot

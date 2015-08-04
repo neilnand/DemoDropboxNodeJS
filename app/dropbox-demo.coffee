@@ -97,7 +97,6 @@ dayOneParse = (dict, parent) ->
       else
         console.log "ReadDayOneFile $parse Error"
 
-
 class ReadDayOneFile
   constructor: (dir, filename, client) ->
     tryWriteFilesCount++
@@ -110,7 +109,15 @@ class ReadDayOneFile
       document = new xmldoc.XmlDocument fileData
       dayOneParse document.firstChild, this
 
-      @renderedContent = marked @Entry_Text
+      @postTitle = ""
+
+      mdRenderer = new marked.Renderer()
+      mdRenderer.heading = (text, level) =>
+        @postTitle = text if !@postTitle
+        "<h#{level}>#{text}</h#{level}>"
+
+      @postBody = marked @Entry_Text,
+        renderer: mdRenderer
 
       tryWriteFilesCount--
       tryWriteFiles()
